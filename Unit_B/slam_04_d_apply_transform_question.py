@@ -107,7 +107,6 @@ def correct_pose(pose, trafo):
     print "corrected_pose = ", corrected_pose
     # --->>> This is what you'll have to implement.
     alpha = atan2(trafo[1],trafo[2])
-    # print "alpha =", alpha
     return (corrected_pose[0], corrected_pose[1], alpha)  # Replace this by the corrected pose.
 
 
