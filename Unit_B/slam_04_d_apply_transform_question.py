@@ -102,12 +102,12 @@ def apply_transform(trafo, p):
 # similarity transform. Note this changes the position as well as
 # the heading.
 def correct_pose(pose, trafo):
-    corrected_pose = apply_transform(trafo, pose)
-    print "pose =", pose
-    print "corrected_pose = ", corrected_pose
     # --->>> This is what you'll have to implement.
-    alpha = atan2(trafo[1],trafo[2])
-    return (corrected_pose[0], corrected_pose[1], alpha)  # Replace this by the corrected pose.
+    print "pose =", pose
+    print "pose[:2]", pose[:2]
+    x,y = apply_transform(trafo, pose[:2])
+    alpha = pose[2] + atan2(trafo[2],trafo[1])
+    return (x, y, alpha)  # Replace this by the corrected pose.
 
 
 if __name__ == '__main__':
@@ -142,7 +142,6 @@ if __name__ == '__main__':
         pose = filter_step(pose, logfile.motor_ticks[i],
                            ticks_to_mm, robot_width,
                            scanner_displacement)
-        print "new pose calculated", pose
         # Extract cylinders, also convert them to world coordinates.
         cartesian_cylinders = compute_scanner_cylinders(
             logfile.scan_data[i],
