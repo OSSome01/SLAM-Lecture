@@ -7,10 +7,10 @@ from distribution import *
 def move(distribution, delta):
     """Returns a Distribution that has been moved (x-axis) by the amount of
        delta."""
-
+    pos = Distribution(distribution.start() +delta,distribution.values)
     # --->>> Insert your code here.
     
-    return distribution  # Replace this by your own result.
+    return pos  # Replace this by your own result.
 
 if __name__ == '__main__':
     # List of movements: move 3 times by 20.
@@ -20,7 +20,6 @@ if __name__ == '__main__':
     position = Distribution.triangle(10,2)
     plot(position.plotlists(0,100)[0], position.plotlists(0,100)[1],
          linestyle='steps')
-
     # Now move and plot.
     for m in moves:
         position = move(position, m)
