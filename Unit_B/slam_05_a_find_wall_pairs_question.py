@@ -35,16 +35,16 @@ def get_corresponding_points_on_wall(points,
     print "points = ", len(points)
     # ---> Implement your code here.
     for i in range(len(points)):
-        if points[i][0] < 150:
+        if  abs(points[i][0]) < 150:
             left_list.append(points[i])
             right_list.append((0,points[i][1]))
-        elif (2000 - points[i][0]) < 150:
+        elif abs(2000 - points[i][0]) < 150:
             left_list.append(points[i])
             right_list.append((2000,points[i][1]))
-        elif points[i][1] < 150:
+        elif abs(points[i][1]) < 150:
             left_list.append(points[i])
             right_list.append((points[i][0],0))
-        elif (2000 - points[i][1]) < 150:
+        elif abs(2000 - points[i][1]) < 150:
             left_list.append(points[i])
             right_list.append((points[i][0],2000))
     return left_list, right_list
