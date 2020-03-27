@@ -32,8 +32,8 @@ def filter_step(old_pose, motor_ticks, ticks_to_mm, robot_width,
         # Turn. Compute alpha, R, etc.
         alpha = (r - l)/w
         R = l/alpha
-        Cx = old_pose[0] - (R+(w/2))*sin(old_pose[2]) 
-        Cy = old_pose[1] + (R+(w/2))*cos(old_pose[2]) 
+        Cx = old_pose[0] - (R+(w/2))*sin(old_pose[2]) - scanner_displacement*cos(theta)
+        Cy = old_pose[1] + (R+(w/2))*cos(old_pose[2]) - scanner_displacement*sin(theta)
         # --->>> Modify your previous implementation.
         # First modify the the old pose to get the center (because the
         #   old pose is the LiDAR's pose, not the robot's center pose).
