@@ -10,6 +10,7 @@ from slam_b_library import filter_step
 from slam_04_a_project_landmarks import\
      compute_scanner_cylinders, write_cylinders
 from math import sqrt
+import numpy as np
 
 # Given a list of 
 # cylinders (points) and reference_cylinders:
@@ -17,22 +18,24 @@ from math import sqrt
 # the index pair (i, j), where i is the index of the cylinder, and
 # j is the index of the reference_cylinder, to the result list.
 # This is the function developed in slam_04_b_find_cylinder_pairs.
+def compute_dist(a, b):
+    x = a[0] - b[0]
+    y = a[1] - b[1]
+    return np.sqrt(x*x + y*y)
+
 def find_cylinder_pairs(cylinders, reference_cylinders, max_radius):
     cylinder_pairs = []
-    for i in range(len(cylinders)):
-        prev_xdist = cylinders[i][0] - reference_cylinders[0][0]
-        prev_ydist = cylinders[i][1] - reference_cylinders[0][1]
-        prev_dist = ((prev_xdist**2)+(prev_ydist**2))**0.5
-        for j in range(len(reference_cylinders)):
-            xdist = cylinders[i][0] - reference_cylinders[j][0]
-            ydist = cylinders[i][1] - reference_cylinders[j][1]
-            dist = ((xdist**2)+(ydist**2))**0.5
-            if dist <= prev_dist:
-                prev_dist = dist
-                closest_reference_cylinder_index = j
-        cylinder_pairs.append((i,closest_reference_cylinder_index))        
-    # --->>> Insert here your code from the last question,
-    # slam_04_b_find_cylinder_pairs.
+
+    # --->>> Enter your code here.
+    # Make a loop over all cylinders and reference_cylinders.
+    # In the loop, if cylinders[i] is closest to reference_cylinders[j],
+    # and their distance is below max_radius, then add the
+    # tuple (i,j) to cylinder_pairs, i.e., cylinder_pairs.append( (i,j) ).
+    for i, c in enumerate(cylinders):
+        for j, r in enumerate(reference_cylinders):
+            if compute_dist(c, r) < max_radius:
+                cylinder_pairs.append((i, j))
+
     return cylinder_pairs
 
 # Given a point list, return the center of mass.
@@ -57,37 +60,37 @@ def estimate_transform(left_list, right_list, fix_scale = False):
     # Compute left and right center.
     lc = compute_center(left_list)
     rc = compute_center(right_list)
-    r = right_list
-    l = left_list
-    r1 = []
-    l1 = []
-    if len(left_list) > 1:
-        for i in range(len(r)):
-            r1.append((r[i][0] - rc[0],r[i][1] - rc[1]))
-        for i in range(len(l)):
-            l1.append((l[i][0] - lc[0],l[i][1] - lc[1])) 
-    cs, ss, rr, ll = 0.0, 0.0, 0.0, 0.0
-    if len(left_list) > 1:
-        for i in range(len(left_list)):
-            cs += (r1[i][0]*l1[i][0]) + (r1[i][1]*l1[i][1])
-            ss += -(r1[i][0]*l1[i][1]) + (r1[i][1]*l1[i][0])
-            rr += (r1[i][0]*r1[i][0]) + (r1[i][1]*r1[i][1])
-            ll += (l1[i][0]*l1[i][0]) + (l1[i][1]*l1[i][1])
-        la = (rr/ll)**0.5
-        if cs!=0 and ss!=0:
-            c = cs/(((cs**2)+(ss**2))**0.5)
-            s = ss/(((cs**2)+(ss**2))**0.5)
-            tx = rc[0] - (la*((c*lc[0])-(s*lc[1])))
-            ty = rc[1] - (la*((s*lc[0])+(c*lc[1])))
-        elif cs==0 and ss==0:
-            c = 0
-            s = 0
-            tx = rc[0]
-            ty = rc[1]
-        if fix_scale == True:
-            la = 1
-        return la, c, s, tx, ty
-    return None
+
+    # --->>> Insert here your code to compute lambda, c, s and tx, ty.
+    left_prime = []
+    right_prime = []
+    for l, r in zip(left_list, right_list):
+        # l = (x, y) coordinate of i_th detected world cylinder
+        # r = (x, y) coordinate of i_th reference cylinder
+        l_prime = (l[0] - lc[0], l[1] - lc[1])
+        r_prime = (r[0] - lc[0], r[1] - lc[1])
+        left_prime.append(l_prime)  # create list of tuples containing reduced coordinates of each cylinder in left_list
+        right_prime.append(r_prime) # create list of tuples containing reduced coordinate of each cylinder in right_list
+
+    n = len(left_list)  # not right_list since not every detected cylinder finds a match
+    cs, ss, rr, ll = 0, 0, 0, 0
+    for i in range(n):
+        cs += (right_prime[i][0] * left_prime[i][0] + right_prime[i][1] * left_prime[i][1])
+        ss += (-right_prime[i][0] * left_prime[i][1] + right_prime[i][1] * left_prime[i][0])
+        rr += (right_prime[i][0] * right_prime[i][0] + right_prime[i][1] * right_prime[i][1])
+        ll += (left_prime[i][0] * left_prime[i][0] + left_prime[i][1] * left_prime[i][1])
+
+    # safeguard against exceptionally high value of lambda
+    if ((ll - 0.0) < 0.00001):
+        return None
+    la = np.sqrt(rr / ll)
+    cs_sum = np.sqrt(cs * cs + ss * ss)
+    c = cs / cs_sum
+    s = ss / cs_sum
+    tx = rc[0] - la * (c * lc[0] - s * lc[1])
+    ty = rc[1] - la * (s * lc[0] + c * lc[1])
+    return la, c, s, tx, ty    # these values are returned as a tuple of 5 elements
+
 # Given a similarity transformation:
 # trafo = (scale, cos(angle), sin(angle), x_translation, y_translation)
 # and a point p = (x, y), return the transformed point.
