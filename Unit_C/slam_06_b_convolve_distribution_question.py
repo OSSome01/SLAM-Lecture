@@ -11,9 +11,17 @@ def move(distribution, delta):
 
 def convolve(a, b):
     """Convolve distribution a and b and return the resulting new distribution."""
-
     # --->>> Put your code here.
-    
+    new = []
+    new_offset = a.offset + b.offset
+    for a_val in a.values:
+        new_val = []
+        for b_val in b.values:
+            new_val.append(a_val*b_val)
+        new.append(Distribution(new_offset,new_val))
+        new_offset += 1
+        dist = Distribution.sum(new)
+        Distribution.normalize(dist)
     return a  # Replace this by your own result.
 
 
