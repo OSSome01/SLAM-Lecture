@@ -28,7 +28,6 @@ class LegoLogfile(object):
         self.detected_cylinders = []
         self.world_cylinders = []
         self.last_ticks = None
-
     def read(self, filename):
         """Reads log data from file. Calling this multiple times with different
            files will result in a merge of the data, i.e. if one file contains
