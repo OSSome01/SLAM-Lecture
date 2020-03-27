@@ -15,7 +15,6 @@ if __name__ == '__main__':
         sp = l.split()
         left_list.append(int(sp[2]))
         right_list.append(int(sp[6]))
-
     plot(left_list)
     plot(right_list)
     show()
