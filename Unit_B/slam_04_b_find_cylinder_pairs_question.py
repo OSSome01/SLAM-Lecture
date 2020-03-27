@@ -4,6 +4,7 @@
 # 04_b_find_cylinder_pairs
 # Claus Brenner, 14 NOV 2012
 from lego_robot import *
+import numpy as np
 from slam_b_library import filter_step
 from slam_04_a_project_landmarks import\
      compute_scanner_cylinders, write_cylinders
@@ -12,28 +13,25 @@ from slam_04_a_project_landmarks import\
 # For every cylinder, find the closest reference_cylinder and add
 # the index pair (i, j), where i is the index of the cylinder, and
 # j is the index of the reference_cylinder, to the result list.
+def compute_dist(a, b):
+    x = a[0] - b[0]
+    y = a[1] - b[1]
+    return np.sqrt(x*x + y*y)
+
 def find_cylinder_pairs(cylinders, reference_cylinders, max_radius):
     cylinder_pairs = []
-    for i in range(len(cylinders)):
-        prev_xdist = cylinders[i][0] - reference_cylinders[0][0]
-        prev_ydist = cylinders[i][1] - reference_cylinders[0][1]
-        prev_dist = ((prev_xdist**2)+(prev_ydist**2))**0.5
-        for j in range(len(reference_cylinders)):
-            xdist = cylinders[i][0] - reference_cylinders[j][0]
-            ydist = cylinders[i][1] - reference_cylinders[j][1]
-            dist = ((xdist**2)+(ydist**2))**0.5
-            if dist <= prev_dist:
-                prev_dist = dist
-                closest_reference_cylinder_index = j
-        cylinder_pairs.append((i,closest_reference_cylinder_index))        
+
     # --->>> Enter your code here.
     # Make a loop over all cylinders and reference_cylinders.
     # In the loop, if cylinders[i] is closest to reference_cylinders[j],
     # and their distance is below max_radius, then add the
     # tuple (i,j) to cylinder_pairs, i.e., cylinder_pairs.append( (i,j) ).
+    for i, c in enumerate(cylinders):
+        for j, r in enumerate(reference_cylinders):
+            if compute_dist(c, r) < max_radius:
+                cylinder_pairs.append((i, j))
 
     return cylinder_pairs
-
 
 if __name__ == '__main__':
     # The constants we used for the filter_step.
