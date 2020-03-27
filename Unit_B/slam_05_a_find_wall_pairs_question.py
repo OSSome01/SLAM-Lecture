@@ -20,15 +20,33 @@ def get_subsampled_points(scan, sampling = 10):
 # eps to the left, right, upper or lower wall of the arena. If so,
 # adds the point to left_list, and the closest point on the wall to
 # right_list.
+def cal_dist(point1, point2):
+    x = (point1[0] - point2[0])**2
+    y = (point1[1] - point2[1])**2
+    dist = (x+y)**0.5
+
+
 def get_corresponding_points_on_wall(points,
                                      arena_left = 0.0, arena_right = 2000.0,
                                      arena_bottom = 0.0, arena_top = 2000.0,
                                      eps = 150.0):
     left_list = []
     right_list = []
-
+    print "points = ", len(points)
     # ---> Implement your code here.
-
+    for i in range(len(points)):
+        if points[i][0] < 150:
+            left_list.append(points[i])
+            right_list.append((0,points[i][1]))
+        elif (2000 - points[i][0]) < 150:
+            left_list.append(points[i])
+            right_list.append((2000,points[i][1]))
+        elif points[i][1] < 150:
+            left_list.append(points[i])
+            right_list.append((points[i][0],0))
+        elif (2000 - points[i][1]) < 150:
+            left_list.append(points[i])
+            right_list.append((points[i][0],2000))
     return left_list, right_list
 
 
